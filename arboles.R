@@ -8,8 +8,20 @@
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 # Instalacion de librerias
-install.packages("qqplot2")
-library(qqplot2)
+install.packages("cluster")
+library(cluster)
+install.packages("factoextra")
+library(factoextra) #Para hacer gráficos bonitos de clustering
+install.packages("ape")
+library(ape)
+install.packages("tree")
+library(tree)
+library(rpart)
+library(caret)
+library(tree)
+library(rpart.plot)
+library(randomForest)
+
 
 # Set de ambientes
 # Para Andrea
@@ -63,8 +75,22 @@ petSterilized
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 # Clustering
+#Gráfico de codo para determinar cuántos clusters utilizar
+wss <- (nrow(allData[,c("Type", "Breed1", "Breed2", "Gender", "Color1", "Color2", "Color3", "MaturitySize", "FurLenght", "Vaccinated", "Dewormed", "Sterilized", "Health", "Quantity", "Fee", "State", "RescuerID", "AdoptionSpeed")])-1)*sum(apply(allData[,c("Type", "Breed1", "Breed2", "Gender", "Color1", "Color2", "Color3", "MaturitySize", "FurLenght", "Vaccinated", "Dewormed", "Sterilized", "Health", "Quantity", "Fee", "State", "RescuerID", "AdoptionSpeed")],2,var))
+
+for (i in 2:15) 
+  wss[i] <- sum(kmeans(allData[,c("Type", "Breed1", "Breed2","Gender", "Color1", "Color2","Color3", "MaturitySize", "FurLenght", "Vaccinated", "Dewormed", "Sterilized", "Health", "Quantity", "Fee", "State", "RescuerID", "AdoptionSpeed")], centers=i)$withinss)
+
+plot(1:15, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
+
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 # Arboles
+porciento <- 70/100 # Porcentaje de grupos de entrenamiento
+set.seed(123)
+trainRowsNumber<-sample(1:nrow(allData),porciento*nrow(allData))
+train<-allData[trainRowsNumber,] # Grupo de entrenamiento
+test<-allData[-trainRowsNumber,] # Grupo de pruebas
 #-----------------------------------------------------------------------------------------------------------------------------------------------
